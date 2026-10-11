@@ -77,9 +77,7 @@ export default function ComputerGameSetup({
           {range && (
             <>
               <Group justify="space-between">
-                <Text fw={700}>
-                  {setup.strength === "elo" ? `引擎 Elo ${value}` : `等级 ${value}`}
-                </Text>
+                <Text fw={700}>{setup.strength === "elo" ? `Elo ${value}` : `等级 ${value}`}</Text>
                 <NumberInput
                   aria-label="难度数值"
                   w={130}
@@ -100,23 +98,16 @@ export default function ComputerGameSetup({
                 step={1}
                 value={value}
                 onChange={(v) => update(setup.strength === "elo" ? { elo: v } : { skill: v })}
-                marks={[
-                  { value: range.min, label: String(range.min) },
-                  { value: range.max, label: String(range.max) },
-                ]}
-                mb="sm"
               />
-              <Text size="xs" c="dimmed">
-                {setup.strength === "elo"
-                  ? "引擎等级分，不等同于网站等级分。"
-                  : "数值越低，难度越低。"}
-              </Text>
+              <Group justify="space-between" mt={-6}>
+                <Text size="xs" c="dimmed">
+                  {range.min}
+                </Text>
+                <Text size="xs" c="dimmed">
+                  {range.max}
+                </Text>
+              </Group>
             </>
-          )}
-          {setup.strength === "full" && (
-            <Text size="sm" c="dimmed">
-              不限制棋力。
-            </Text>
           )}
         </Stack>
       )}

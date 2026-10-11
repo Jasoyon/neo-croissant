@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1 — local candidate, 2026-10-11
+
+Remove the Elo, skill and unrestricted-strength helper sentences from computer-game setup. Shorten the Elo heading and align the slider endpoint numbers inside the panel.
+
 ## 0.2.0 — local candidate, 2026-10-11
 
 Add a focused computer-game setup with native engine Elo/skill bounds, color and clock presets. Keep difficulty changes local to the game. Add visible takeback, results, rematch, swap sides and PGN export; retain completed games in an analysis tab when starting another. Hide analysis during play. Reject stale engine replies after takebacks and detect terminal starting positions. Uses existing Mantine controls and concise Chinese labels.
