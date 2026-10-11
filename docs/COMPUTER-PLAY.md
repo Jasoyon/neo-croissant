@@ -1,0 +1,32 @@
+# 人机对弈：实现与验证范围
+
+采用 En Croissant 现有 Mantine 控件、字体、主题和布局。没有新品牌页、渐变卡片或营销文案。
+
+## 已实现
+
+- 人机对弈为默认设置页；引擎参数、引擎对引擎仍保留在高级设置。
+- 查询引擎实际 UCI 参数。Elo 模式发送 UCI_LimitStrength=true 与 UCI_Elo；等级模式关闭 Elo 限制并发送 Skill Level；最高强度恢复 Skill Level 上限。
+- 本机 Stockfish 18 实测：Elo 1320–3190，Skill Level 0–20。UI 按查询结果确定边界，拒绝不支持或越界的值。
+- 参数单独传给本盘引擎，不写入全局分析引擎配置。
+- 执白、执黑、随机；不限时、3+2、5+3、10+0、15+10；不限时情况下电脑每步最多思考约 1 秒。
+- 对局状态、悔棋、认输、结束原因。对局期间隐藏主复盘入口并禁用棋谱边栏的分析入口。
+- 同条件再来一局、交换黑白；重新开局前把上一盘保存在单独分析标签页（会话内），另提供 PGN 文件保存。
+- 错误显示在页面内；启动失败回到设置页。
+- 后端使用局面修订号，拒绝悔棋后旧搜索任务的回复；悔棋不跨过起始走法；已将死或逼和的起始局面立即结束。
+
+## 与 Lichess 的边界
+
+核对了 [fishnet 难度参数](https://github.com/lichess-org/fishnet/blob/master/src/api.rs) 和 [搜索请求](https://github.com/lichess-org/fishnet/blob/master/src/stockfish.rs)。Lichess 1–8 级使用 Skill Level -9、-5、-1、3、7、11、16、20，配合深度和时间限制。本机标准 Stockfish 18 不接受负等级。用户允许使用 Elo，因此这里采用引擎原生 Elo / Skill Level，不虚构完全相同的 Lichess 1–8 级，也不宣称网站分数等价。
+
+未移植 Lichess 服务端、账户与对局历史服务、在线评级、专用低等级引擎、电脑接受和棋提议的策略。复盘进入现有分析页面，没有新增自动教练或语言模型评语。分析页仍遵循用户原有分析设置。
+
+## 本次检查
+
+- 32 项前端测试通过：包含 10 项新棋力/完整界面流程检查，以及原 22 项动画与指针检查。
+- 3 项 Rust 检查通过：悔棋后的过期回复、终局起始 FEN、真实 Stockfish 的 Elo 1320/2000 与 Skill 0 参数及合法应手。
+- 类型检查、macOS release 编译通过。
+- 没有通过实际窗口下棋或截图核验：当前会话禁止监听 localhost，本地预览服务被 EPERM 拒绝。
+- 尚未安装：当前会话只允许写工作目录，不能替换 /Applications。原应用保持原样。
+- 0.2.0 尚未推送/发布：网络受限，现有代理不可访问。
+
+复现测试：在准备好的源码目录运行 pnpm exec vitest run tests/computerGame.test.ts tests/computerGameFlow.test.tsx；在 src-tauri 运行 cargo test computer_game_tests。真实引擎检查需 NEO_TEST_ENGINE 指向本机 Stockfish，再运行 cargo test computer_game_tests -- --include-ignored。

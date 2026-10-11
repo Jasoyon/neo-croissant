@@ -81,3 +81,7 @@ python3 scripts/install_macos.py --restore '/完整路径/备份.zip'
 ## 来源与许可
 
 应用与棋盘源码分别来自 [En Croissant](https://github.com/franciscoBSalgueiro/en-croissant) 和 [Chessground](https://github.com/lichess-org/chessground)，遵守 GPL-3.0。项目代码按 [GPL-3.0](LICENSE) 发布；第三方媒体、名称与商标不因此取得本项目许可。900 道题来自 [Lichess CC0 题库](https://database.lichess.org/#puzzles)。完整说明见 [第三方来源](THIRD_PARTY_NOTICES.md)。
+
+### 本地候选版 0.2.0：人机对弈
+
+保留原有界面控件与配色，新增 Elo / 引擎等级、执子、用时、悔棋、结果、重赛、交换黑白及保存棋谱。高级引擎对局设置仍可使用。详见 [实现与验证范围](docs/COMPUTER-PLAY.md)。当前 GitHub 已发布版本仍为 0.1.2；0.2.0 是本地候选版。

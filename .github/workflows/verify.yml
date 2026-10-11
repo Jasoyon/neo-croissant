@@ -21,7 +21,7 @@ jobs:
         working-directory: .build/upstream
       - run: pnpm exec tsgo --noEmit
         working-directory: .build/upstream
-      - run: pnpm exec vitest run src/chessground/animation.test.ts src/chessground/appMotion.test.ts tests/dynamicMotion.test.ts
+      - run: pnpm exec vitest run src/chessground/animation.test.ts src/chessground/appMotion.test.ts tests/dynamicMotion.test.ts tests/computerGame.test.ts tests/computerGameFlow.test.tsx
         working-directory: .build/upstream
       - run: node .build/upstream/node_modules/vitest/vitest.mjs run --config preview/test.config.mjs
       - run: node .build/upstream/node_modules/vite/bin/vite.js build --config preview/vite.config.mjs

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.0 — local candidate, 2026-10-11
+
+Add a focused computer-game setup with native engine Elo/skill bounds, color and clock presets. Keep difficulty changes local to the game. Add visible takeback, results, rematch, swap sides and PGN export; retain completed games in an analysis tab when starting another. Hide analysis during play. Reject stale engine replies after takebacks and detect terminal starting positions. Uses existing Mantine controls and concise Chinese labels.
+
+This follows the local play flow, not the Lichess server engine or its calibrated 1–8 levels. The macOS candidate builds and tests pass; installation and visual verification remain pending because this session cannot write /Applications or serve localhost.
+
 ## 0.1.2 — 2026-10-11
 
 Fix check-square edge misalignment at board widths that Chessground rounds down to physical pixels. Mount square effects in the rendered board instead of the larger outer wrapper; check, capture and landing effects now share the board geometry. Motion timing and colors are unchanged.
