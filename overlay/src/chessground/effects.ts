@@ -1,7 +1,7 @@
 import type { Api } from '@lichess-org/chessground/api';
 import type { Key, Piece } from '@lichess-org/chessground/types';
 export type MoveEffect={from:Key;to:Key;color:'white'|'black';userDrop:boolean;captured?:{square:Key;piece:Piece};rook?:{from:Key;to:Key};promotion?:boolean;check?:Key};
-export function createEffects(api:Api,host:HTMLElement){
+export function createEffects(api:Api,_host:HTMLElement){
  const nodes=new Set<HTMLElement>(),timers=new Set<ReturnType<typeof setTimeout>>();
  const pieceMotions=new Map<string,{kind:'turn'|'check'|'promote';start:number;duration:number;dx?:number}>();
  const enabled=()=>api.state.animation.enabled&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -10,7 +10,9 @@ export function createEffects(api:Api,host:HTMLElement){
  function square(key:Key,cls:string,life?:number){
   const flip=api.state.orientation==='black',x=key.charCodeAt(0)-97,y=8-Number(key[1]);
   const node=document.createElement('div');node.className=`motion-vfx ${cls}`;node.setAttribute('aria-hidden','true');node.dataset.square=key;
-  Object.assign(node.style,{left:`${(flip?7-x:x)*12.5}%`,top:`${(flip?7-y:y)*12.5}%`});host.append(node);nodes.add(node);
+  Object.assign(node.style,{left:`${(flip?7-x:x)*12.5}%`,top:`${(flip?7-y:y)*12.5}%`});
+  // Chessground snaps its board to physical pixels; the outer wrapper can be larger.
+  api.state.dom.elements.board.append(node);nodes.add(node);
   if(life)later(()=>remove(node),life+40);return node;
  }
  function ring(to:Key){const n=square(to,'vfx-growing-circle',400),circle=document.createElement('div');circle.className='growing-circle';const dark=(to.charCodeAt(0)-96+Number(to[1]))%2===0;circle.style.setProperty('--growing-circle-color',dark?'#fff':'#000000');circle.style.setProperty('--growing-circle-initial-opacity',dark?'.25':'.07');n.append(circle)}

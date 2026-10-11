@@ -54,6 +54,19 @@ test('automatic rotation matches reference keyframe interpolation',()=>{
  for(const sample of reference.turn)expect(automaticAngle(sample.dx,sample.ms)).toBeCloseTo(sample.angle,12);
 });
 
+test('check and move overlays use the rendered board, not its larger wrapper',()=>{
+ const a=setup(580);a.host.style.width='583px';a.state.dom.elements.board.style.width='580px';
+ for(const orientation of ['white','black']){
+  a.state.orientation=orientation;a.stop.check('h8');
+  const overlay=a.host.querySelector<HTMLElement>('.vfx-king-check-square')!;
+  expect(overlay.parentElement).toBe(a.state.dom.elements.board);
+  expect(overlay.style.left).toBe(orientation==='white'?'87.5%':'0%');
+  a.stop.move({from:'e2',to:'e4',color:'white',userDrop:false});
+  for(const node of a.host.querySelectorAll('.motion-vfx'))expect(node.parentElement).toBe(a.state.dom.elements.board);
+ }
+ a.stop();expect(a.host.querySelector('.motion-vfx')).toBeNull();
+});
+
 test('mouse cursor changes on pickup and restores on release, blur and teardown',()=>{
  const a=setup();a.state.draggable.enabled=true;
  a.host.dispatchEvent(new MouseEvent('mousedown',{bubbles:true,button:0}));a.tick(0);
