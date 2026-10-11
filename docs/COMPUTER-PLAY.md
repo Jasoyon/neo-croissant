@@ -8,7 +8,7 @@
 - 查询引擎实际 UCI 参数。Elo 模式发送 UCI_LimitStrength=true 与 UCI_Elo；等级模式关闭 Elo 限制并发送 Skill Level；最高强度恢复 Skill Level 上限。
 - 本机 Stockfish 18 实测：Elo 1320–3190，Skill Level 0–20。UI 按查询结果确定边界，拒绝不支持或越界的值。
 - 参数单独传给本盘引擎，不写入全局分析引擎配置。
-- 执白、执黑、随机；不限时、3+2、5+3、10+0、15+10；不限时情况下电脑每步最多思考约 1 秒。
+- 执白、执黑、随机；不限时、3+2、5+3、10+0、15+10；从 0.2.2 起，人机模式无论是否计时，都保留每步约 1 秒的搜索预算；临近超时会缩短。
 - 对局状态、悔棋、认输、结束原因。对局期间隐藏主复盘入口并禁用棋谱边栏的分析入口。
 - 同条件再来一局、交换黑白；重新开局前把上一盘保存在单独分析标签页（会话内），另提供 PGN 文件保存。
 - 错误显示在页面内；启动失败回到设置页。
@@ -30,3 +30,7 @@
 - 0.2.0 尚未推送/发布：网络受限，现有代理不可访问。
 
 复现测试：在准备好的源码目录运行 pnpm exec vitest run tests/computerGame.test.ts tests/computerGameFlow.test.tsx；在 src-tauri 运行 cargo test computer_game_tests。真实引擎检查需 NEO_TEST_ENGINE 指向本机 Stockfish，再运行 cargo test computer_game_tests -- --include-ignored。
+
+## 0.2.2 计时修复检查
+
+等级 0、1.d4、十分钟对局的原命令在十秒内未返回走法；补上每步时限后，同局面约一秒返回。新增前端断言先复现 go=null，再通过修复。32 项前端检查和 5 项后端检查通过；真实 Stockfish 连续三次响应分别约 1.003、1.000、1.000 秒，包含无加秒、每步加两秒、每步加十秒。

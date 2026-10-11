@@ -1377,6 +1377,34 @@ fn try_polyglot_book_move(controller: &GameController) -> Option<String> {
     Some(legal_moves[selected].0.clone())
 }
 
+// Timed computer games keep both their game clock and their per-move budget.
+// Advanced clock-only games continue to use the engine's own time management.
+fn game_search_command(
+    go: Option<&GoMode>,
+    turn: Color,
+    white_time: Option<u64>,
+    black_time: Option<u64>,
+    increments: (u64, u64),
+) -> String {
+    let remaining = if turn == Color::White { white_time } else { black_time };
+    if let Some(remaining) = remaining {
+        let as_uci_time = |time: u64| time.min(u32::MAX as u64) as u32;
+        let mut command = GoMode::PlayersTime(PlayersTime::new(
+            as_uci_time(white_time.unwrap_or(u32::MAX as u64)),
+            as_uci_time(black_time.unwrap_or(u32::MAX as u64)),
+            as_uci_time(increments.0),
+            as_uci_time(increments.1),
+        )).to_uci_string();
+        if let Some(GoMode::Time(limit)) = go {
+            let budget = u64::from(*limit).min(remaining.saturating_sub(50)).max(1);
+            command.push_str(&format!(" movetime {budget}"));
+        }
+        command
+    } else {
+        go.unwrap_or(&GoMode::Depth(20)).to_uci_string()
+    }
+}
+
 async fn request_engine_move(
     game_id: &str,
     controller: &Arc<RwLock<GameController>>,
@@ -1422,7 +1450,7 @@ async fn request_engine_move(
         }
     }
 
-    let (engine_arc, go_mode, initial_fen, moves, turn, revision) = {
+    let (engine_arc, go_command, initial_fen, moves, turn, revision) = {
         let ctrl = controller.read().await;
 
         if ctrl.status != GameStatus::Playing {
@@ -1450,33 +1478,18 @@ async fn request_engine_move(
         let moves: Vec<String> = ctrl.moves.iter().map(|m| m.uci.clone()).collect();
         let (white_time, black_time) = ctrl.get_current_times();
 
-        let current_time = if turn == Color::White {
-            white_time
-        } else {
-            black_time
-        };
+        let increments = ctrl.clock.as_ref()
+            .map(|c| (c.white_increment, c.black_increment))
+            .unwrap_or((0, 0));
+        let go_command = game_search_command(go.as_ref(), turn, white_time, black_time, increments);
 
-        let go_mode = if current_time.is_some() {
-            let (winc, binc) = ctrl
-                .clock
-                .as_ref()
-                .map(|c| (c.white_increment as u32, c.black_increment as u32))
-                .unwrap_or((0, 0));
-
-            let wt = white_time.unwrap_or(u64::MAX) as u32;
-            let bt = black_time.unwrap_or(u64::MAX) as u32;
-            GoMode::PlayersTime(PlayersTime::new(wt, bt, winc, binc))
-        } else {
-            go.unwrap_or(GoMode::Depth(20))
-        };
-
-        (engine, go_mode, initial_fen, moves, turn, ctrl.position_revision)
+        (engine, go_command, initial_fen, moves, turn, ctrl.position_revision)
     };
 
     let best_move = {
         let mut engine = engine_arc.lock().await;
         engine.set_position(&initial_fen, &moves).await?;
-        engine.go(&go_mode).await?;
+        engine.send(&go_command).await?;
         engine.wait_for_bestmove().await?
     };
 
@@ -1612,6 +1625,53 @@ mod computer_game_tests {
         let game = GameController::new("test".into(), config(Some("7k/5Q2/6K1/8/8/8/8/8 b - - 0 1"))).unwrap();
         assert!(matches!(game.status, GameStatus::Finished{result:GameResult::Draw{reason:DrawReason::Stalemate}}));
     }
+    #[test]
+    fn timed_computer_search_keeps_move_limit_and_clock() {
+        let go = Some(GoMode::Time(1000));
+        assert_eq!(game_search_command(go.as_ref(), Color::Black, Some(598000), Some(600000), (0, 0)),
+            "go wtime 598000 btime 600000 winc 0 binc 0 movetime 1000");
+        assert_eq!(game_search_command(go.as_ref(), Color::White, Some(180000), Some(180000), (2000, 2000)),
+            "go wtime 180000 btime 180000 winc 2000 binc 2000 movetime 1000");
+        assert_eq!(game_search_command(go.as_ref(), Color::Black, None, None, (0, 0)), "go movetime 1000");
+        assert_eq!(game_search_command(None, Color::Black, Some(600000), Some(600000), (0, 0)),
+            "go wtime 600000 btime 600000 winc 0 binc 0");
+        assert_eq!(game_search_command(go.as_ref(), Color::Black, Some(600000), Some(200), (0, 0)),
+            "go wtime 600000 btime 200 winc 0 binc 0 movetime 150");
+        assert_eq!(game_search_command(go.as_ref(), Color::White, Some(30), Some(600000), (0, 0)),
+            "go wtime 30 btime 600000 winc 0 binc 0 movetime 1");
+    }
+
+    #[tokio::test]
+    #[ignore = "Requires NEO_TEST_ENGINE pointing to an installed Stockfish"]
+    async fn real_stockfish_timed_skill_zero_replies_within_move_budget() {
+        let path = std::env::var("NEO_TEST_ENGINE").expect("NEO_TEST_ENGINE");
+        let mut engine = BaseEngine::spawn(PathBuf::from(&path)).await.unwrap();
+        engine.init_uci().await.unwrap();
+        engine.set_option("Threads", 4).await.unwrap();
+        engine.set_option("Hash", 512).await.unwrap();
+        engine.set_option("Skill Level", 0).await.unwrap();
+        engine.set_option("UCI_LimitStrength", false).await.unwrap();
+        engine.send("isready").await.unwrap();
+        engine.wait_for("readyok").await.unwrap();
+        let mut game = GameController::new("timed-test".into(),config(None)).unwrap();
+        game.apply_move_no_clock("d2d4").unwrap();
+        // Same first move, difficulty and ten-minute clock as the reported game.
+        // Continue across both colors and with increments after that first reply.
+        for increment in [0, 2000, 10000] {
+            let moves = game.moves.iter().map(|m|m.uci.clone()).collect::<Vec<_>>();
+            engine.set_position(&game.initial_fen, &moves).await.unwrap();
+            let command = game_search_command(Some(&GoMode::Time(1000)), game.position.turn(),
+                Some(598000), Some(600000), (increment, increment));
+            let started = std::time::Instant::now();
+            engine.send(&command).await.unwrap();
+            let reply = tokio::time::timeout(Duration::from_secs(3), engine.wait_for_bestmove())
+                .await.expect("timed computer move exceeded three seconds").unwrap();
+            eprintln!("{command}: {:?}, {reply}", started.elapsed());
+            game.apply_move_no_clock(&reply).unwrap();
+        }
+        engine.quit().await.unwrap();
+    }
+
     #[tokio::test]
     #[ignore = "Requires NEO_TEST_ENGINE pointing to an installed Stockfish"]
     async fn real_stockfish_strength_options_and_legal_replies() {

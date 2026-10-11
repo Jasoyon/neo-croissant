@@ -193,6 +193,7 @@ test("start applies Elo and clocks; resign leads to result, review and same-colo
     ]),
   );
   expect(backend.config.blackTimeControl).toEqual({ initialTime: 300000, increment: 3000 });
+  expect(backend.config.black.go).toEqual({ t: "Time", c: 1000 });
   expect(document.body.textContent).toContain("轮到你走棋");
   expect(document.body.textContent).not.toContain("复盘");
   const first = backend.state.gameId;

@@ -306,7 +306,7 @@ function BoardGame() {
           name: s.name,
           value: s.value?.toString() ?? "",
         })),
-      go: settings.timeControl ? null : settings.go,
+      go: settings.timeControl && !simpleGame ? null : settings.go,
     };
   }
 

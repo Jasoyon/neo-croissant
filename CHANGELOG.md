@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.2 — 2026-10-11
+
+Fix long thinking in timed computer games: retain the existing one-second move budget when a clock is selected, and send it together with the remaining times and increments. Clamp the budget near flag fall. Advanced clock-only games keep their original time management. Add a timed-game configuration regression and real Stockfish response-time coverage.
+
 ## 0.2.1 — local candidate, 2026-10-11
 
 Remove the Elo, skill and unrestricted-strength helper sentences from computer-game setup. Shorten the Elo heading and align the slider endpoint numbers inside the panel.
