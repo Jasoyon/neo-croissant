@@ -35,3 +35,7 @@
 @keyframes promote-ripple-fade{0%{opacity:.4}to{opacity:0}}
 .motion-vfx{position:absolute;width:12.5%;height:12.5%;pointer-events:none;z-index:1}.motion-vfx .element{background-repeat:no-repeat}.motion-vfx.vfx-king-check-square .square{background-image:none}.motion-vfx.vfx-promote-ripple{z-index:3}
 .dynamic-piece-visual.motion-check{animation:king-check-grow 50ms linear forwards,king-check-wiggle .2s linear 50ms 5 forwards,king-check-shrink .25s cubic-bezier(.16,1,.3,1) 1.05s forwards}.dynamic-piece-visual.motion-promote{animation:piece-promote-scale .2s forwards}[data-dynamic="true"] piece.fading{visibility:hidden}
+
+/* Pieces ignore hit testing; the board and destination squares own the cursor. */
+[data-piece-cursor="grab"], [data-piece-cursor="grab"] cg-board, [data-piece-cursor="grab"] cg-board square { cursor: grab !important; }
+html.neo-piece-grab, html.neo-piece-grab * { cursor: grabbing !important; }

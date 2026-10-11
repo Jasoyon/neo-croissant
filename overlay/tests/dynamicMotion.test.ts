@@ -19,8 +19,9 @@ function setup(width=560){
  Object.assign(piece,{cgKey:'e2'});board.getBoundingClientRect=()=>({width} as DOMRect);
  board.append(piece);host.append(board);document.body.append(host);
  const state:any={orientation:'white',pieces:new Map([['e4',{color:'white'}]]),selected:'e2',animation:{enabled:true,duration:180,current:undefined},draggable:{current:{element:piece}},dom:{destroyed:false,elements:{board}}};
- const stop=installDynamicMotion({state} as unknown as Api,host);
- return{state,host,piece,media,stop,tick:(t:number)=>callback(t)};
+ const api={state,getKeyAtDomPos:vi.fn(()=> 'e4')} as unknown as Api;
+ const stop=installDynamicMotion(api,host);
+ return{api,state,host,piece,media,stop,tick:(t:number)=>callback(t)};
 }
 afterEach(()=>{vi.unstubAllGlobals();document.body.replaceChildren()});
 test('holding returns to original size after 200ms without altering translation or adding shadow',()=>{
@@ -51,4 +52,27 @@ test('reduced motion and teardown restore the piece background',()=>{
 
 test('automatic rotation matches reference keyframe interpolation',()=>{
  for(const sample of reference.turn)expect(automaticAngle(sample.dx,sample.ms)).toBeCloseTo(sample.angle,12);
+});
+
+test('mouse cursor changes on pickup and restores on release, blur and teardown',()=>{
+ const a=setup();a.state.draggable.enabled=true;
+ a.host.dispatchEvent(new MouseEvent('mousedown',{bubbles:true,button:0}));a.tick(0);
+ expect(document.documentElement.classList.contains('neo-piece-grab')).toBe(true);
+ document.dispatchEvent(new MouseEvent('mouseup',{bubbles:true}));a.tick(16);
+ expect(document.documentElement.classList.contains('neo-piece-grab')).toBe(false);
+ a.host.dispatchEvent(new MouseEvent('mousedown',{bubbles:true,button:0}));a.tick(32);
+ window.dispatchEvent(new Event('blur'));a.tick(48);
+ expect(document.documentElement.classList.contains('neo-piece-grab')).toBe(false);
+ a.host.dispatchEvent(new MouseEvent('mousedown',{bubbles:true,button:0}));a.tick(64);a.stop();
+ expect(document.documentElement.classList.contains('neo-piece-grab')).toBe(false);
+});
+
+test('hover cursor belongs to the board and remains available with reduced motion',()=>{
+ const a=setup();a.state.draggable.enabled=true;a.state.draggable.current=undefined;a.media.matches=true;
+ a.host.dispatchEvent(new MouseEvent('mousemove',{bubbles:true}));a.tick(0);
+ expect(a.host.dataset.pieceCursor).toBe('grab');
+ vi.mocked(a.api.getKeyAtDomPos).mockReturnValue('a1');a.host.dispatchEvent(new MouseEvent('mousemove',{bubbles:true}));
+ expect(a.host.hasAttribute('data-piece-cursor')).toBe(false);
+ vi.mocked(a.api.getKeyAtDomPos).mockReturnValue('e4');a.state.viewOnly=true;a.tick(16);
+ expect(a.host.hasAttribute('data-piece-cursor')).toBe(false);a.stop();
 });

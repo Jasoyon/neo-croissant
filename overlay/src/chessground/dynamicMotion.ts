@@ -2,6 +2,7 @@ import type { Api } from '@lichess-org/chessground/api';
 import type { PieceNode } from '@lichess-org/chessground/types';
 import { createEffects } from './effects';
 import './effects.css';
+import { installPieceCursor } from './pieceCursor';
 import { pickupScale, sway, zeroRotation, automaticAngle } from './motionMath';
 
 // The board retains exclusive ownership of the piece's translation.
@@ -9,6 +10,7 @@ export function installDynamicMotion(api: Api, host: HTMLElement) {
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
   const visuals = new Map<HTMLElement, {node: HTMLElement; backgroundSize: string}>();
   const effects = createEffects(api,host);
+  const cursor = installPieceCursor(api,host);
   host.dataset.dynamic='true';
   let frame=0, stopped=false, selected: string|undefined, pulseStart=-Infinity;
   let dragged: HTMLElement|undefined, previousX: number|undefined, previousTime=0;
@@ -26,6 +28,7 @@ export function installDynamicMotion(api: Api, host: HTMLElement) {
   }
   function tick(now: number) {
     if(stopped) return;
+    cursor.refresh();
     const state=api.state, enabled=state.animation.enabled&&!reduced.matches&&!state.dom.destroyed;
     const current=state.draggable.current;
     const el=typeof current?.element==='function'?undefined:current?.element;
@@ -58,6 +61,6 @@ export function installDynamicMotion(api: Api, host: HTMLElement) {
     previousTime=now; frame=requestAnimationFrame(tick);
   }
   frame=requestAnimationFrame(tick);
-  const stop=()=>{stopped=true;cancelAnimationFrame(frame);for(const el of visuals.keys())reset(el);effects.clear();delete host.dataset.dynamic;};
+  const stop=()=>{stopped=true;cancelAnimationFrame(frame);cursor();for(const el of visuals.keys())reset(el);effects.clear();delete host.dataset.dynamic;};
   return Object.assign(stop,{clear:effects.clear,move:effects.move,check:effects.check,promote:effects.promote,reject:effects.reject});
 }
