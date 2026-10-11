@@ -1,0 +1,10 @@
+[Event "02 黑棋 卡罗康对e4"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "?"]
+[Black "?"]
+[Result "*"]
+[Orientation "black"]
+
+1. e4 c6 2. d4 ( 2. Nf3 d5 3. Nc3 Bg4 4. h3 Bxf3 5. Qxf3 e6 ) 2... d5 3. Nc3 ( 3. Nd2 dxe4 4. Nxe4 Bf5 ) ( 3. e5 Bf5 4. Nf3 e6 5. Be2 c5 ) ( 3. exd5 cxd5 4. Bd3 ( 4. c4 Nf6 5. Nc3 e6 ) 4... Nc6 5. c3 Nf6 ) 3... dxe4 4. Nxe4 Bf5 5. Ng3 Bg6 *

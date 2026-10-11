@@ -1,0 +1,72 @@
+[
+  {
+    "path": "public/pieces/neo/wp.png",
+    "url": "https://www.chess.com/chess-themes/pieces/neo/300/wp.png",
+    "sha256": "7b4befeb14120b359e8c9c2bc9c6f9c940593db74b14bcf77aadfaa1acd8121f"
+  },
+  {
+    "path": "public/pieces/neo/wn.png",
+    "url": "https://www.chess.com/chess-themes/pieces/neo/300/wn.png",
+    "sha256": "37962b6ed8868a4e98e0532753ac5ef08cd796d8ba101e3fb1128a71e706404b"
+  },
+  {
+    "path": "public/pieces/neo/wb.png",
+    "url": "https://www.chess.com/chess-themes/pieces/neo/300/wb.png",
+    "sha256": "ab4d09c7f838b4958996176de512ff53cad8762b0ec0108c68e9bd9c3fddf3c2"
+  },
+  {
+    "path": "public/pieces/neo/wr.png",
+    "url": "https://www.chess.com/chess-themes/pieces/neo/300/wr.png",
+    "sha256": "60a52d09dcf64572be3c0392571b9903dc953d5dfb95f57554d191ffee7d3215"
+  },
+  {
+    "path": "public/pieces/neo/wq.png",
+    "url": "https://www.chess.com/chess-themes/pieces/neo/300/wq.png",
+    "sha256": "ba9e31c1c95efcbd10502eb74734a871249a176bc77d4b4bde8fbc45767c8791"
+  },
+  {
+    "path": "public/pieces/neo/wk.png",
+    "url": "https://www.chess.com/chess-themes/pieces/neo/300/wk.png",
+    "sha256": "055e3c926c0ee837e532e6dbac897b3f696dc72263bf059248e3f6de5daabd15"
+  },
+  {
+    "path": "public/pieces/neo/bp.png",
+    "url": "https://www.chess.com/chess-themes/pieces/neo/300/bp.png",
+    "sha256": "3de1af692e8206a805f086d80689e36bcf0cf60a96f602b896c036eed4c37c95"
+  },
+  {
+    "path": "public/pieces/neo/bn.png",
+    "url": "https://www.chess.com/chess-themes/pieces/neo/300/bn.png",
+    "sha256": "4df6755e0bfa21f11ac10265435f08ab885c0dba758b90c23b81ab167ae4aeb0"
+  },
+  {
+    "path": "public/pieces/neo/bb.png",
+    "url": "https://www.chess.com/chess-themes/pieces/neo/300/bb.png",
+    "sha256": "0678ea343a019e4deab621955d55bdb30ef4902fa99e02697cbb3ae7f410d40b"
+  },
+  {
+    "path": "public/pieces/neo/br.png",
+    "url": "https://www.chess.com/chess-themes/pieces/neo/300/br.png",
+    "sha256": "58600e06d3f82988868379945eb658fe95164296d9b0dc9640e01abf2a08fce5"
+  },
+  {
+    "path": "public/pieces/neo/bq.png",
+    "url": "https://www.chess.com/chess-themes/pieces/neo/300/bq.png",
+    "sha256": "4252fee8d044d4ea0947c1474aeb2a1653dddee63b734653267c735897e91c83"
+  },
+  {
+    "path": "public/pieces/neo/bk.png",
+    "url": "https://www.chess.com/chess-themes/pieces/neo/300/bk.png",
+    "sha256": "cd91a234ce688db843652a52b6bd468faf14fbe51269f93aee14a1c426915f00"
+  },
+  {
+    "path": "sound/standard/Move.mp3",
+    "url": "https://www.chess.com/sounds/_MP3_/default/move-self.mp3",
+    "sha256": "3a2eb75af1334c06dafd735c23388a560285e0df9436a44d27adc95a010a8547"
+  },
+  {
+    "path": "sound/standard/Capture.mp3",
+    "url": "https://www.chess.com/sounds/_MP3_/default/capture.mp3",
+    "sha256": "7158a77f3eb9a763fe723e9c9291819de8748444a1192d10383159fd8175709b"
+  }
+]

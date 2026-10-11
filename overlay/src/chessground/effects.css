@@ -1,0 +1,37 @@
+.motion-vfx.vfx-piece-capture .element{animation:capture-fade .4s ease-in-out forwards;background-size:100%;cursor:default;height:100%;overflow:unset;transform-origin:center 90%;width:100%}
+@keyframes capture-fade{0%{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(2)}}
+.motion-vfx.vfx-king-check-square .square{--grow-duration: 50ms;--shrink-duration: .25s;--overlay-start-delay: .1s;--overlay-total-delay: calc(var(--grow-duration) + var(--shrink-duration) + var(--overlay-start-delay));animation:king-check-square-grow var(--grow-duration) linear,king-check-square-shrink var(--shrink-duration) cubic-bezier(.16,1,.3,1) var(--grow-duration);background-image:var(--bg-image);background-position:var(--file) var(--rank);background-size:800%;height:100%;width:100%}
+.flipped .motion-vfx.vfx-king-check-square .square{background-position:calc(100% - var(--file)) calc(100% - var(--rank))}
+.motion-vfx.vfx-king-check-square .color-overlay{animation:king-check-square-pulse 2s cubic-bezier(.33,1,.68,1) var(--overlay-total-delay) infinite;background-color:#e63946;height:100%;opacity:.55;width:100%}
+@keyframes king-check-square-grow{0%{transform:scale(1)}to{transform:scale(1.15)}}
+@keyframes king-check-square-shrink{0%{transform:scale(1.15)}to{transform:scale(1)}}
+@keyframes king-check-square-pulse{0%{opacity:.55}50%{opacity:.25}to{opacity:.55}}
+.motion-vfx.vfx-king-check .element{animation:king-check-grow 50ms linear forwards,king-check-wiggle .2s linear 50ms 5 forwards,king-check-shrink .25s cubic-bezier(.16,1,.3,1) 1.05s forwards;background-size:100%;cursor:default;height:100%;overflow:unset;position:relative;width:100%}
+@keyframes king-check-grow{0%{transform:scale(1)}to{transform:scale(1.1)}}
+@keyframes king-check-wiggle{0%{transform:scale(1.1) rotate(0)}25%{transform:scale(1.1) rotate(-4deg)}50%{transform:scale(1.1) rotate(0)}75%{transform:scale(1.1) rotate(4deg)}to{transform:scale(1.1) rotate(0)}}
+@keyframes king-check-shrink{0%{transform:scale(1.1)}to{transform:scale(1)}}
+.motion-vfx.vfx-piece-trail .trail-segment{--piece-move-duration: .22s;--trail-width: 0%;--trail-scale-duration: var(--piece-move-duration);--trail-fadeout-duration: .3s;border-radius:999px;height:40%;left:50%;opacity:1;position:absolute;top:50%;transform:translateY(-50%) rotate(var(--rotation)) scaleX(0);transform-origin:0 50%;width:var(--trail-width)}
+.motion-vfx.vfx-piece-trail .trail-segment.animating{animation:trail-scale var(--trail-scale-duration) ease-in-out forwards,trail-fadeout var(--trail-fadeout-duration) ease-out var(--trail-scale-duration) forwards}
+@keyframes trail-scale{0%{transform:translateY(-50%) rotate(var(--rotation)) scaleX(0)}to{transform:translateY(-50%) rotate(var(--rotation)) scaleX(1)}}
+@keyframes trail-fadeout{0%{opacity:1}to{opacity:0}}
+.motion-vfx.vfx-illegal-move-tap{overflow:hidden;pointer-events:none}
+.motion-vfx.vfx-illegal-move-tap .illegal-move-tap-overlay{animation:illegal-move-tap-overlay-fade .7s cubic-bezier(.33,1,.68,1) forwards;background-color:#e63946;height:100%;left:0;opacity:.55;position:absolute;top:0;width:100%;z-index:1}
+.motion-vfx.vfx-illegal-move-tap .illegal-move-tap-circle{animation:illegal-move-tap-circle-opacity .3s ease-in-out forwards,illegal-move-tap-circle-expand .4s cubic-bezier(.33,1,.68,1) forwards;background-color:#000;border-radius:100%;height:100%;left:50%;position:absolute;top:50%;width:100%;z-index:2}
+@keyframes illegal-move-tap-overlay-fade{0%{opacity:.55}to{opacity:0}}
+@keyframes illegal-move-tap-circle-opacity{0%{opacity:.07}to{opacity:0}}
+@keyframes illegal-move-tap-circle-expand{0%{transform:translate(-50%,-50%) scale(.6)}to{opacity:0;transform:translate(-50%,-50%) scale(1.5)}}
+.motion-vfx.vfx-growing-circle{overflow:hidden;pointer-events:none}
+.motion-vfx.vfx-growing-circle .growing-circle{animation:growing-circle-opacity .3s ease-in-out forwards,growing-circle-expand .4s cubic-bezier(.33,1,.68,1) forwards;background-color:var(--growing-circle-color, #000000);border-radius:100%;height:100%;left:50%;position:absolute;top:50%;width:100%;z-index:2}
+@keyframes growing-circle-opacity{0%{opacity:var(--growing-circle-initial-opacity, .07)}to{opacity:0}}
+@keyframes growing-circle-expand{0%{transform:translate(-50%,-50%) scale(.6)}to{opacity:0;transform:translate(-50%,-50%) scale(1.5)}}
+.motion-vfx.vfx-piece-promote .element{animation:piece-promote-scale .2s forwards;background-size:100%;cursor:default;height:100%;width:100%}
+@keyframes piece-promote-scale{0%{animation-timing-function:cubic-bezier(.16,1,.3,1);scale:1}50%{animation-timing-function:cubic-bezier(0,.55,.45,1);scale:1.35}to{scale:1}}
+.motion-vfx.vfx-promote-ripple{overflow:visible;pointer-events:none}
+.motion-vfx.vfx-promote-ripple .circle{background-color:#fff;border-radius:50%;box-shadow:0 0 1px 1px #fffc;height:100%;left:50%;position:absolute;top:50%;width:100%}
+.motion-vfx.vfx-promote-ripple .circle-out-cubic{animation:promote-ripple-scale-small .35s cubic-bezier(.33,1,.68,1) forwards,promote-ripple-fade .35s linear forwards}
+.motion-vfx.vfx-promote-ripple .circle-in-out-back{animation:promote-ripple-scale-large .35s cubic-bezier(.68,-.6,.32,1.6) forwards,promote-ripple-fade .35s linear forwards}
+@keyframes promote-ripple-scale-small{0%{transform:translate(-50%,-50%) scale(.6)}to{transform:translate(-50%,-50%) scale(1.6)}}
+@keyframes promote-ripple-scale-large{0%{transform:translate(-50%,-50%) scale(.6)}to{transform:translate(-50%,-50%) scale(2)}}
+@keyframes promote-ripple-fade{0%{opacity:.4}to{opacity:0}}
+.motion-vfx{position:absolute;width:12.5%;height:12.5%;pointer-events:none;z-index:1}.motion-vfx .element{background-repeat:no-repeat}.motion-vfx.vfx-king-check-square .square{background-image:none}.motion-vfx.vfx-promote-ripple{z-index:3}
+.dynamic-piece-visual.motion-check{animation:king-check-grow 50ms linear forwards,king-check-wiggle .2s linear 50ms 5 forwards,king-check-shrink .25s cubic-bezier(.16,1,.3,1) 1.05s forwards}.dynamic-piece-visual.motion-promote{animation:piece-promote-scale .2s forwards}[data-dynamic="true"] piece.fading{visibility:hidden}

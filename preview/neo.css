@@ -1,0 +1,12 @@
+.pawn.white { background-image: url("./neo/wp.png"); }
+.knight.white { background-image: url("./neo/wn.png"); }
+.bishop.white { background-image: url("./neo/wb.png"); }
+.rook.white { background-image: url("./neo/wr.png"); }
+.queen.white { background-image: url("./neo/wq.png"); }
+.king.white { background-image: url("./neo/wk.png"); }
+.pawn.black { background-image: url("./neo/bp.png"); }
+.knight.black { background-image: url("./neo/bn.png"); }
+.bishop.black { background-image: url("./neo/bb.png"); }
+.rook.black { background-image: url("./neo/br.png"); }
+.queen.black { background-image: url("./neo/bq.png"); }
+.king.black { background-image: url("./neo/bk.png"); }

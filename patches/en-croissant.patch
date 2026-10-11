@@ -1,0 +1,167 @@
+diff --git a/pnpm-lock.yaml b/pnpm-lock.yaml
+index 0f92560..9a183f2 100644
+--- a/pnpm-lock.yaml
++++ b/pnpm-lock.yaml
+@@ -4,6 +4,9 @@ settings:
+   autoInstallPeers: true
+   excludeLinksFromLockfile: false
+ 
++patchedDependencies:
++  '@lichess-org/chessground@10.0.2': debf14cd0d2198062181377436600fd9aece6bebce366203b77ec600ee8ba259
++
+ importers:
+ 
+   .:
+@@ -16,7 +19,7 @@ importers:
+         version: 18.0.1(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+       '@lichess-org/chessground':
+         specifier: ^10.0.2
+-        version: 10.0.2
++        version: 10.0.2(patch_hash=debf14cd0d2198062181377436600fd9aece6bebce366203b77ec600ee8ba259)
+       '@mantine/charts':
+         specifier: ^8.3.14
+         version: 8.3.14(@mantine/core@8.3.14(@mantine/hooks@8.3.14(react@19.2.4))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@mantine/hooks@8.3.14(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(recharts@3.7.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react-is@18.3.1)(react@19.2.4)(redux@5.0.1))
+@@ -4171,7 +4174,7 @@ snapshots:
+       '@jridgewell/resolve-uri': 3.1.2
+       '@jridgewell/sourcemap-codec': 1.5.5
+ 
+-  '@lichess-org/chessground@10.0.2': {}
++  '@lichess-org/chessground@10.0.2(patch_hash=debf14cd0d2198062181377436600fd9aece6bebce366203b77ec600ee8ba259)': {}
+ 
+   '@mantine/charts@8.3.14(@mantine/core@8.3.14(@mantine/hooks@8.3.14(react@19.2.4))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@mantine/hooks@8.3.14(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(recharts@3.7.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react-is@18.3.1)(react@19.2.4)(redux@5.0.1))':
+     dependencies:
+diff --git a/pnpm-workspace.yaml b/pnpm-workspace.yaml
+index 54455ee..087d075 100644
+--- a/pnpm-workspace.yaml
++++ b/pnpm-workspace.yaml
+@@ -1,5 +1,12 @@
++allowBuilds:
++  '@swc/core': true
++  core-js: true
++  esbuild: true
++  protobufjs: true
+ onlyBuiltDependencies:
+   - "@swc/core"
+   - core-js
+   - esbuild
+   - protobufjs
++patchedDependencies:
++  '@lichess-org/chessground@10.0.2': patches/@lichess-org__chessground@10.0.2.patch
+diff --git a/src/chessground/Chessground.tsx b/src/chessground/Chessground.tsx
+index 24ea957..009d163 100644
+--- a/src/chessground/Chessground.tsx
++++ b/src/chessground/Chessground.tsx
+@@ -6,6 +6,8 @@ import { useAtomValue } from "jotai";
+ import { type Ref, useEffect, useImperativeHandle, useRef, useState } from "react";
+ import { boardImageAtom, moveMethodAtom } from "@/state/atoms";
+ 
++import { installAppMotion } from "./appMotion";
++
+ const BOARD_COORDINATE_COLORS: Record<string, { white: string; black: string }> = {
+   blue: { white: "#dee3e6", black: "#788a94" },
+   blue2: { white: "#97b2c7", black: "#546f82" },
+@@ -65,6 +67,10 @@ export function Chessground({ ref, ...props }: ChessgroundProps) {
+ 
+   const moveMethod = useAtomValue(moveMethodAtom);
+ 
++  useEffect(() => {
++    if (api && boardRef.current) return installAppMotion(api, boardRef.current);
++  }, [api]);
++
+   useImperativeHandle(
+     ref,
+     () => ({
+@@ -79,6 +85,7 @@ export function Chessground({ ref, ...props }: ChessgroundProps) {
+     if (api) {
+       api.set({
+         ...props,
++        animation: { duration: 180, ...props.animation },
+         events: {
+           ...props.events,
+           change: () => {
+@@ -91,6 +98,7 @@ export function Chessground({ ref, ...props }: ChessgroundProps) {
+     } else {
+       const chessgroundApi = NativeChessground(boardRef.current, {
+         ...props,
++        animation: { duration: 180, ...props.animation },
+         addDimensionsCssVarsTo: boardRef.current,
+         events: {
+           ...props.events,
+@@ -101,6 +109,8 @@ export function Chessground({ ref, ...props }: ChessgroundProps) {
+           },
+         },
+         draggable: {
++          distance: 0,
++          autoDistance: false,
+           ...props.draggable,
+           enabled: moveMethod !== "select",
+         },
+@@ -116,6 +126,7 @@ export function Chessground({ ref, ...props }: ChessgroundProps) {
+   useEffect(() => {
+     api?.set({
+       ...props,
++        animation: { duration: 180, ...props.animation },
+       events: {
+         ...props.events,
+         change: () => {
+@@ -125,7 +136,9 @@ export function Chessground({ ref, ...props }: ChessgroundProps) {
+         },
+       },
+       draggable: {
+-        ...props.draggable,
++        distance: 0,
++          autoDistance: false,
++          ...props.draggable,
+         enabled: moveMethod !== "select",
+       },
+       selectable: {
+diff --git a/src/components/settings/BoardSelect.tsx b/src/components/settings/BoardSelect.tsx
+index cf72905..1f81c8a 100644
+--- a/src/components/settings/BoardSelect.tsx
++++ b/src/components/settings/BoardSelect.tsx
+@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
+ import { boardImageAtom } from "@/state/atoms";
+ 
+ const boardImages: string[] = [
++  "chesscom-green.svg",
+   "blue.png",
+   "blue2.jpg",
+   "blue3.jpg",
+@@ -59,7 +60,7 @@ function SelectOption({ label }: { label: string }) {
+         }}
+       />
+       <Text fz="sm" fw={500}>
+-        {label.split(".")[0]}
++        {label === "chesscom-green.svg" ? "Chess.com Green" : label.split(".")[0]}
+       </Text>
+     </Group>
+   );
+diff --git a/src/components/settings/PiecesSelect.tsx b/src/components/settings/PiecesSelect.tsx
+index 0635a5d..38c0f99 100644
+--- a/src/components/settings/PiecesSelect.tsx
++++ b/src/components/settings/PiecesSelect.tsx
+@@ -19,6 +19,7 @@ type Item = {
+ };
+ 
+ const pieceSets: Item[] = [
++  { label: "Chess.com Neo", value: "neo" },
+   { label: "Alpha", value: "alpha" },
+   { label: "Anarcandy", value: "anarcandy" },
+   { label: "California", value: "california" },
+diff --git a/src/styles/chessgroundBaseOverride.css b/src/styles/chessgroundBaseOverride.css
+index faeefe7..ca342cf 100644
+--- a/src/styles/chessgroundBaseOverride.css
++++ b/src/styles/chessgroundBaseOverride.css
+@@ -223,3 +223,12 @@ piece.fading {
+ .cg-custom-below {
+   display: none;
+ }
++
++/* Dynamic-style feedback; this layer cannot intercept board input. */
++.dynamic-piece-visual {
++  position: absolute;
++  inset: 0;
++  background-size: cover;
++  pointer-events: none;
++  transform-origin: center;
++}

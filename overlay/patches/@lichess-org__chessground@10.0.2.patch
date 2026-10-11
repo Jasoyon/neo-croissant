@@ -1,0 +1,26 @@
+diff --git a/dist/anim.js b/dist/anim.js
+index bc7d1f65c492788415871134107338e5aec994e6..df54a1c930089ef2a81e9d820ef196d8021df6b5 100644
+--- a/dist/anim.js
++++ b/dist/anim.js
+@@ -94,6 +94,5 @@ function animate(mutation, state) {
+     }
+     return result;
+ }
+-// https://gist.github.com/gre/1650294
+-const easing = (t) => (t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1);
+-//# sourceMappingURL=anim.js.map
+\ No newline at end of file
++// Chess.com default JS renderer: symmetric easeInOutQuad.
++const easing = (t) => t < .5 ? 2*t*t : 1 - 2*(1-t)*(1-t);
+diff --git a/src/anim.ts b/src/anim.ts
+index 1cdb5288a805cf8894e3df15bb2e181b2f8f6c16..62925e7757624c878e7a0abfa5244621f2fb65a9 100644
+--- a/src/anim.ts
++++ b/src/anim.ts
+@@ -135,5 +135,5 @@ function animate<A>(mutation: Mutation<A>, state: State): A {
+   return result;
+ }
+ 
+-// https://gist.github.com/gre/1650294
+-const easing = (t: number): number => (t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1);
++// Chess.com default JS renderer: symmetric easeInOutQuad.
++const easing = (t: number): number => t < .5 ? 2*t*t : 1 - 2*(1-t)*(1-t);

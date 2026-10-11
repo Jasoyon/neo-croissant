@@ -1,0 +1,45 @@
+{
+  "files": [
+    {
+      "file": "01 白棋 e4与意大利入门.pgn",
+      "games": 1,
+      "type": "repertoire"
+    },
+    {
+      "file": "02 黑棋 卡罗康对e4.pgn",
+      "games": 1,
+      "type": "repertoire"
+    },
+    {
+      "file": "03 黑棋 d4稳健防御.pgn",
+      "games": 1,
+      "type": "repertoire"
+    },
+    {
+      "file": "06 残局摆棋练习与中文提示.pgn",
+      "games": 12,
+      "type": "puzzle"
+    }
+  ],
+  "puzzles": {
+    "04 战术精选 800-1600": {
+      "count": 600,
+      "themes": {
+        "mateIn1": 100,
+        "mateIn2": 100,
+        "fork": 100,
+        "pin": 100,
+        "skewer": 100,
+        "discoveredAttack": 100
+      }
+    },
+    "05 残局精选 800-1600": {
+      "count": 300,
+      "themes": {
+        "pawnEndgame": 100,
+        "rookEndgame": 100,
+        "promotion": 100
+      }
+    }
+  }
+}

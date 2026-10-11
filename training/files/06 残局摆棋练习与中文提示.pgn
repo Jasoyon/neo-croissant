@@ -1,0 +1,167 @@
+[Event "残局计算 01"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "?"]
+[Black "?"]
+[Result "*"]
+[FEN "1R6/2P5/p5k1/6pp/1P6/6PK/r6P/8 b - - 0 40"]
+[SetUp "1"]
+[Orientation "black"]
+[Source "Local Lichess Puzzles 2026 / id 719"]
+
+40... g4+ 41. Kh4 Rxh2# *
+
+[Event "残局计算 02"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "?"]
+[Black "?"]
+[Result "*"]
+[FEN "8/6P1/5k1K/8/8/3p4/P2R4/6r1 b - - 2 49"]
+[SetUp "1"]
+[Orientation "black"]
+[Source "Local Lichess Puzzles 2026 / id 766"]
+
+49... Rh1+ 50. Rh2 Rxh2# *
+
+[Event "残局计算 03"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "?"]
+[Black "?"]
+[Result "*"]
+[FEN "3R4/2p2k2/4p1p1/1p2P2p/1P6/8/4rr2/3R2K1 w - - 8 42"]
+[SetUp "1"]
+[Orientation "white"]
+[Source "Local Lichess Puzzles 2026 / id 1744"]
+
+42. R1d7# *
+
+[Event "残局计算 04"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "?"]
+[Black "?"]
+[Result "*"]
+[FEN "8/2R5/1p3kpp/8/5PKP/Pr6/8/8 b - - 1 39"]
+[SetUp "1"]
+[Orientation "black"]
+[Source "Local Lichess Puzzles 2026 / id 2650"]
+
+39... h5# *
+
+[Event "残局计算 05"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "?"]
+[Black "?"]
+[Result "*"]
+[FEN "3r2k1/p1pP1qpp/1p6/8/2Q5/6P1/P4P1P/4R1K1 w - - 0 29"]
+[SetUp "1"]
+[Orientation "white"]
+[Source "Local Lichess Puzzles 2026 / id 4667"]
+
+29. Re8+ Rxe8 30. dxe8=Q# *
+
+[Event "残局计算 06"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "?"]
+[Black "?"]
+[Result "*"]
+[FEN "7R/8/3k4/5K2/8/8/8/3r4 w - - 22 72"]
+[SetUp "1"]
+[Orientation "white"]
+[Source "Local Lichess Puzzles 2026 / id 6233"]
+
+72. Rd8+ Kc6 73. Rxd1 *
+
+[Event "残局计算 07"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "?"]
+[Black "?"]
+[Result "*"]
+[FEN "8/2R4p/6pk/5p2/2rP1KPP/4PP2/8/2r5 w - - 0 42"]
+[SetUp "1"]
+[Orientation "white"]
+[Source "Local Lichess Puzzles 2026 / id 6566"]
+
+42. g5+ Kh5 43. Rxh7# *
+
+[Event "残局计算 08"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "?"]
+[Black "?"]
+[Result "*"]
+[FEN "8/8/5p2/2pkp1p1/1p4P1/1P1PK3/r1P1RP2/8 w - - 0 41"]
+[SetUp "1"]
+[Orientation "white"]
+[Source "Local Lichess Puzzles 2026 / id 6842"]
+
+41. c4+ bxc3 42. Rxa2 *
+
+[Event "残局计算 09"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "?"]
+[Black "?"]
+[Result "*"]
+[FEN "8/4k3/4r3/3K4/8/8/8/7R w - - 21 65"]
+[SetUp "1"]
+[Orientation "white"]
+[Source "Local Lichess Puzzles 2026 / id 7416"]
+
+65. Rh7+ Kf6 66. Rh6+ Kg5 67. Rxe6 *
+
+[Event "残局计算 10"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "?"]
+[Black "?"]
+[Result "*"]
+[FEN "1R6/1P4p1/7p/5P2/8/5kP1/1r5P/5K2 b - - 2 46"]
+[SetUp "1"]
+[Orientation "black"]
+[Source "Local Lichess Puzzles 2026 / id 7589"]
+
+46... Rb1# *
+
+[Event "残局计算 11"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "?"]
+[Black "?"]
+[Result "*"]
+[FEN "8/8/8/8/3p4/3k1P2/8/2K5 b - - 1 62"]
+[SetUp "1"]
+[Orientation "black"]
+[Source "Local Lichess Puzzles 2026 / id 8554"]
+
+62... Ke2 63. Kc2 d3+ *
+
+[Event "残局计算 12"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "?"]
+[Black "?"]
+[Result "*"]
+[FEN "7k/5p1P/p3rp1N/7Q/5pp1/q1P2n2/P4P2/3K4 w - - 5 31"]
+[SetUp "1"]
+[Orientation "white"]
+[Source "Local Lichess Puzzles 2026 / id 9445"]
+
+31. Nxf7+ Kg7 32. h8=Q# *
