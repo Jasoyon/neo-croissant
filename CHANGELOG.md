@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.0 — 2026-10-13
+
+Add on-demand move hints with a transient green arrow and SAN. Use a separate, bounded engine process at full strength; clear hints when the position or game changes. Keep only the native takeback control. Start postgame review from the opening with full-strength tab-local analysis. Terminal positions show their result with navigation and whole-game report actions. Reports no longer require a reference database unless novelty annotation is selected, and analysis failures are surfaced.
+
 ## 0.2.2 — 2026-10-11
 
 Fix long thinking in timed computer games: retain the existing one-second move budget when a clock is selected, and send it together with the remaining times and increments. Clamp the budget near flag fall. Advanced clock-only games keep their original time management. Add a timed-game configuration regression and real Stockfish response-time coverage.

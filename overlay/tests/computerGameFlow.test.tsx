@@ -5,12 +5,13 @@ import { Provider } from "jotai";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { INITIAL_FEN } from "chessops/fen";
 import BoardGame from "@/components/boards/BoardGame";
-import { TreeStateProvider } from "@/components/common/TreeStateContext";
+import { TreeStateContext, TreeStateProvider } from "@/components/common/TreeStateContext";
 
 const backend = vi.hoisted(() => ({
   listeners: new Map<string, Function>(),
   state: null as any,
   config: null as any,
+  tree: null as any,
 }));
 vi.mock("@tauri-apps/plugin-log", () => ({ error: vi.fn() }));
 vi.mock("@/utils/sound", () => ({ playSound: vi.fn() }));
@@ -34,12 +35,20 @@ vi.mock("@/state/atoms", async () => {
   const human = { type: "human", name: "Player" };
   return {
     activeTabAtom: atom("test"),
+    currentTabSelectedAtom: atom("info"),
+    currentAnalysisTabAtom: atom("engines"),
+    currentEvalOpenAtom: atom(false),
+    tabEngineSettingsFamily: (() => {
+      const a = atom({ enabled: false, settings: [], go: { t: "Infinite" }, synced: true });
+      return () => a;
+    })(),
     enginesAtom: atom([
       {
         type: "local",
         id: "sf",
         name: "Stockfish",
         version: "18",
+        loaded: true,
         path: "/test/stockfish",
         settings: [{ name: "Skill Level", value: 0 }],
       },
@@ -59,6 +68,10 @@ vi.mock("@/state/atoms", async () => {
 });
 vi.mock("@/bindings", () => ({
   commands: {
+    getEngineConfig: vi.fn(async () => ({
+      status: "ok",
+      data: { name: "Stockfish", options: [] },
+    })),
     startGame: vi.fn(async (id, config) => {
       backend.config = config;
       backend.state = {
@@ -79,7 +92,9 @@ vi.mock("@/bindings", () => ({
     abortGame: vi.fn(async () => ({ status: "ok", data: null })),
     resignGame: vi.fn(async (id, color) => {
       const result = { type: color === "white" ? "blackWins" : "whiteWins", reason: "resignation" };
-      backend.listeners.get("over")?.({ payload: { gameId: id, moves: backend.state.moves, result } });
+      backend.listeners.get("over")?.({
+        payload: { gameId: id, moves: backend.state.moves, result },
+      });
       return { status: "ok", data: backend.state };
     }),
   },
@@ -99,11 +114,21 @@ vi.mock("@/bindings", () => ({
     ]),
   ),
 }));
-vi.mock("@/components/boards/Board", () => ({ default: () => <div>棋盘</div> }));
+vi.mock("@/components/boards/Board", () => ({
+  default: () => {
+    backend.tree = React.useContext(TreeStateContext);
+    return <div>棋盘</div>;
+  },
+}));
 vi.mock("@/components/common/GameInfo", () => ({ default: () => null }));
-vi.mock("@/components/common/GameNotation", () => ({ default: () => null }));
+vi.mock("@/components/common/GameNotation", () => ({
+  default: ({ controls }: any) => <>{controls}</>,
+}));
 vi.mock("@/components/common/MoveControls", () => ({ default: () => null }));
-vi.mock("@/components/boards/BoardControls", () => ({ default: () => null }));
+vi.mock("@/components/boards/BoardControls", () => ({
+  default: ({ canTakeBack, onTakeBack }: any) =>
+    canTakeBack ? <button onClick={onTakeBack}>原生悔棋</button> : null,
+}));
 vi.mock("@/components/boards/EditingCard", () => ({ default: () => null }));
 vi.mock("@/components/boards/OpponentForm", () => ({ OpponentForm: () => null }));
 vi.mock("@/components/common/EngineLogsView", () => ({ default: () => null }));
@@ -220,15 +245,48 @@ test("failed engine launch stays on setup and exposes the error", async () => {
 });
 
 test("takeback is available after moves and a rematch keeps the completed game", async () => {
-  const {commands} = await import('@/bindings');
-  await click('Board.Opponent.StartGame');
+  const { commands } = await import("@/bindings");
+  await click("Board.Opponent.StartGame");
   async function moves() {
-    backend.state.moves=[{uci:'e2e4',clock:null},{uci:'e7e5',clock:null}];
-    await act(async()=>{backend.listeners.get('move')?.({payload:{...backend.state}});await new Promise(r=>setTimeout(r,180));});
+    backend.state.moves = [
+      { uci: "e2e4", clock: null },
+      { uci: "e7e5", clock: null },
+    ];
+    await act(async () => {
+      backend.listeners.get("move")?.({ payload: { ...backend.state } });
+      await new Promise((r) => setTimeout(r, 180));
+    });
   }
-  await moves(); await click('悔棋');expect(commands.takeBackGameMove).toHaveBeenCalledWith(backend.state.gameId);
-  await moves();await click('认输');
-  const save = vi.spyOn(sessionStorage,'setItem');await click('再来一局');
-  const preserved=save.mock.calls.map(([,value])=>JSON.parse(value)).find(v=>v.state?.root?.children?.length);
-  expect(preserved.state.headers.result).toBe('0-1');expect(preserved.state.root.children[0].children).toHaveLength(1);
+  await moves();
+  await click("原生悔棋");
+  expect(commands.takeBackGameMove).toHaveBeenCalledWith(backend.state.gameId);
+  await moves();
+  await click("认输");
+  const save = vi.spyOn(sessionStorage, "setItem");
+  await click("再来一局");
+  const preserved = save.mock.calls
+    .map(([, value]) => JSON.parse(value))
+    .find((v) => v.state?.root?.children?.length);
+  expect(preserved.state.headers.result).toBe("0-1");
+  expect(preserved.state.root.children[0].children).toHaveLength(1);
+});
+
+test("review returns to the start and preserves every move; no duplicate takeback button", async () => {
+  await click("Board.Opponent.StartGame");
+  expect([...document.querySelectorAll("button")].some((b) => b.textContent === "悔棋")).toBe(
+    false,
+  );
+  backend.state.moves = [
+    { uci: "d2d4", clock: null },
+    { uci: "d7d5", clock: null },
+  ];
+  await act(async () => {
+    backend.listeners.get("move")?.({ payload: { ...backend.state } });
+    await new Promise((r) => setTimeout(r, 180));
+  });
+  await click("认输");
+  expect(backend.tree.getState().position.length).toBeGreaterThan(0);
+  await click("复盘");
+  expect(backend.tree.getState().position).toEqual([]);
+  expect(backend.tree.getState().root.children[0].children).toHaveLength(1);
 });

@@ -18,6 +18,8 @@ import { atomWithStorage } from "jotai/utils";
 import useSWRImmutable from "swr/immutable";
 import type { LocalEngine } from "@/utils/engines";
 import ComputerGameSetup from "./ComputerGameSetup";
+import { useGameHint } from "./useGameHint";
+import { analysisOptions } from "@/utils/gameHint";
 import {
   computerPlayers,
   defaultComputerSetup,
@@ -37,8 +39,8 @@ import { writeTextFile } from "@tauri-apps/plugin-fs";
 import { getPGN } from "@/utils/chess";
 import type { Piece } from "chessops";
 import { makeUci, parseUci } from "chessops";
-import { INITIAL_FEN } from "chessops/fen";
-import { useAtom, useAtomValue } from "jotai";
+import { INITIAL_FEN, makeFen } from "chessops/fen";
+import { useAtom, useAtomValue, useStore as useAtomStore } from "jotai";
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { match } from "ts-pattern";
@@ -55,6 +57,10 @@ import {
 import type { ChessgroundRef } from "@/chessground/Chessground";
 import {
   activeTabAtom,
+  currentAnalysisTabAtom,
+  currentTabSelectedAtom,
+  currentEvalOpenAtom,
+  tabEngineSettingsFamily,
   enginesAtom,
   currentGameIdAtom,
   currentGameStateAtom,
@@ -105,6 +111,7 @@ const computerSetupAtom = atomWithStorage<ComputerSetup>(
 function BoardGame() {
   const { t } = useTranslation();
   const activeTab = useAtomValue(activeTabAtom);
+  const atomStore = useAtomStore();
   const installedEngines = useAtomValue(enginesAtom);
   const localEngines = useMemo(
     () => (installedEngines ?? []).filter((e): e is LocalEngine => e.type === "local"),
@@ -274,11 +281,34 @@ function BoardGame() {
 
   async function changeToAnalysisMode() {
     if (gameState === "playing") return;
-    if (gameId) await commands.abortGame(gameId);
-    setGameId(null);
-    setTabs((prev) =>
-      prev.map((tab) => (tab.value === activeTab ? { ...tab, type: "analysis" } : tab)),
-    );
+    try {
+      const engine = localEngines.find((e) => e.id === computerEngine?.id) ?? localEngines[0];
+      if (engine && activeTab) {
+        const config = unwrap(await commands.getEngineConfig(engine.path));
+        atomStore.set(tabEngineSettingsFamily({ tab: activeTab, engineId: engine.id }), (prev) => ({
+          ...prev,
+          enabled: true,
+          synced: false,
+          go: { t: "Time", c: 1000 },
+          settings: analysisOptions(engine, config),
+        }));
+        if (!engine.loaded)
+          atomStore.set(enginesAtom, async (prev) =>
+            (await prev).map((e) => (e.id === engine.id ? { ...e, loaded: true } : e)),
+          );
+      }
+      if (gameId) unwrap(await commands.abortGame(gameId));
+      setGameId(null);
+      store.getState().goToMove([]);
+      atomStore.set(currentTabSelectedAtom, "analysis");
+      atomStore.set(currentAnalysisTabAtom, "engines");
+      atomStore.set(currentEvalOpenAtom, true);
+      setTabs((prev) =>
+        prev.map((tab) => (tab.value === activeTab ? { ...tab, type: "analysis" } : tab)),
+      );
+    } catch (err) {
+      setGameError(String(err));
+    }
   }
 
   const [pos, error] = useMemo(() => {
@@ -288,6 +318,24 @@ function BoardGame() {
     }
     return positionFromFen(node.fen);
   }, [root]);
+
+  const liveFen = pos ? makeFen(pos.toSetup()) : root.fen;
+  const displayedFen = useStore(store, (s) => s.currentNode().fen);
+  const hintOpponent =
+    players.white.type === "engine"
+      ? players.white
+      : players.black.type === "engine"
+        ? players.black
+        : null;
+  const hintEngine = hintOpponent?.engine ?? null;
+  const canHint =
+    gameState === "playing" &&
+    isPlayerVsEngine &&
+    !busy &&
+    !pos?.isEnd() &&
+    (players.white.type === "human" ? "white" : "black") === pos?.turn &&
+    displayedFen === liveFen;
+  const coach = useGameHint(hintEngine, liveFen, gameId ?? "", canHint);
 
   function toPlayerConfig(settings: OpponentSettings): PlayerConfig {
     if (settings.type === "human") {
@@ -729,6 +777,7 @@ function BoardGame() {
           blackTime={gameState === "playing" ? (blackTime ?? undefined) : undefined}
           onMove={handleHumanMove}
           selectedPiece={selectedPiece}
+          hint={coach.hint ? { fen: liveFen, shape: coach.hint.shape } : null}
           cgRef={cgRef}
           enablePremoves={isPlayerVsEngine && gameState === "playing"}
         />
@@ -920,15 +969,22 @@ function BoardGame() {
                         )}
                   </Text>
                   {gameState === "playing" && isPlayerVsEngine && (
-                    <Button
-                      variant="default"
-                      disabled={
-                        busy || getTreeMoves().length <= (lastGame.current?.moves.length ?? 0)
-                      }
-                      onClick={onTakeBack}
-                    >
-                      悔棋
-                    </Button>
+                    <Group justify="space-between">
+                      <Button
+                        variant="default"
+                        disabled={!canHint}
+                        loading={coach.loading}
+                        onClick={coach.request}
+                      >
+                        {coach.hint ? "隐藏提示" : "提示"}
+                      </Button>
+                      {coach.hint && <Text size="sm">{coach.hint.san}</Text>}
+                      {coach.error && (
+                        <Text size="sm" c="red">
+                          {coach.error}
+                        </Text>
+                      )}
+                    </Group>
                   )}
                   <Group grow>
                     {gameState === "playing" && (

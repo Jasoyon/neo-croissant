@@ -48,3 +48,11 @@ CI 工作流重复源码准备、前端检查、动画测试、预览构建、�
 0.1.2 红格对齐修正：原回归检查先失败，再修复通过。真实 Chromium 渲染检查覆盖 6 种宽度（含小数宽度）、3 种像素倍率、2 种朝向、4 个格子，共 144 组。修复前 96 组偏差超过 0.02 CSS px，最大 6.125 px；修复后全部通过，最大 0.013671875 px（布局量化误差）。583 px 外框、Retina 2 倍、h8 的偏差由 2.625 px 变为 0。预览截图已检查；这些量化结果属于 Chromium，不能据此声称已经逐帧验证 macOS WebKit 的所有尺寸。
 
 已安装 0.1.2 对应本地构建，重新打开并载入原来的 Qe6+ 局面；实际 macOS 应用截图中 e8 红格与棋盘格对齐。应用签名验证、已安装文件与签名暂存文件逐字节比较、Move/Capture 音效哈希检查全部通过。
+
+## 0.3.0 — 2026-10-13
+
+38 frontend tests, 2 coach backend tests (including real Stockfish), and 5 computer-game backend regressions passed. Release build and strict ad-hoc signature verification passed. Installed bundle matches all 28 staged files; existing Move/Capture asset hashes are unchanged. Previous installation was backed up before replacement.
+
+Native macOS interaction: on-demand e2-e4 hint arrow and SAN displayed; playing e4 cleared the hint, Stockfish answered c5. Native takeback returned to the start; a subsequent d4 received Nf6. Resignation followed by review returned to the opening and produced a live evaluation. Whole-game report completed. A 93-ply saved stalemate game showed the terminal navigation controls and successfully generated an analysis report. The analysis was saved as a separate local PGN, with the unannotated mainline and all clocks retained separately; no personal game is included in the kit.
+
+The hint is an engine suggestion, not a natural-language coach or a full implementation of any online service. Automated tests cover castling/promotion hint conversion and stale-response rejection; native interaction covered the ordinary white-to-move sequence above.
