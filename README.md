@@ -17,6 +17,8 @@ An unofficial Chess.com-style restoration kit for En Croissant: Neo pieces, a gr
 | 特殊走法 | 王车易位同时处理王和车；吃过路兵在实际被吃格播放效果；四种升变 |
 | 音效 | Chess.com 默认普通落子与吃子 MP3，替换 Standard 中这两种声音 |
 | 独立预览 | 六个合法场景、播放、翻转、缩放、手动走棋和对齐检查 |
+| 人机对弈 | 引擎原生 Elo / 等级、执子与用时、重赛、交换黑白及棋谱保存 |
+| 提示与复盘 | 按需显示建议箭头；使用正常分析强度复盘；终局回看与整盘报告入口 |
 | 中文训练 | 三份开局库，共 22 条分支；600 道战术、300 道残局；12 道带中文提示的摆棋练习 |
 | 开发与恢复 | 固定版本补丁、完整新增源码、数值参考样本、测试、素材校验、构建和备份恢复脚本 |
 
@@ -82,6 +84,8 @@ python3 scripts/install_macos.py --restore '/完整路径/备份.zip'
 
 应用与棋盘源码分别来自 [En Croissant](https://github.com/franciscoBSalgueiro/en-croissant) 和 [Chessground](https://github.com/lichess-org/chessground)，遵守 GPL-3.0。项目代码按 [GPL-3.0](LICENSE) 发布；第三方媒体、名称与商标不因此取得本项目许可。900 道题来自 [Lichess CC0 题库](https://database.lichess.org/#puzzles)。完整说明见 [第三方来源](THIRD_PARTY_NOTICES.md)。
 
-### 本地候选版 0.2.0：人机对弈
+### 0.3.0：人机对弈、提示与复盘
 
-保留原有界面控件与配色，新增 Elo / 引擎等级、执子、用时、悔棋、结果、重赛、交换黑白及保存棋谱。高级引擎对局设置仍可使用。详见 [实现与验证范围](docs/COMPUTER-PLAY.md)。当前 GitHub 已发布版本仍为 0.1.2；0.2.0 是本地候选版。
+保留原有界面控件与配色，支持 Elo / 引擎等级、执子、用时、重赛、交换黑白及保存棋谱。轮到自己时点“提示”显示建议箭头，落子后自动清除。悔棋使用原生图标；结束后点“复盘”，或在“分析 → 报告”生成整盘报告。高级引擎对局设置仍可使用。
+
+已完成本机安装与交互验证；38 项前端检查和 7 项后端检查通过。详见 [实现与验证范围](docs/COMPUTER-PLAY.md) 和 [验证记录](docs/VERIFICATION.md)。
